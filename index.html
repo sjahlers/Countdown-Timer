@@ -3,136 +3,24 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>jQuery Countdown</title>
-		<!-- <link rel="stylesheet" href="css/jquery.countdown.css"> -->
-    <style type="text/css">
-        #myCountdown {
-          margin: 2em 0;
-          font-size: 1.35em;
-          font-family: sans-serif;
-        }
-
-        #defaultCountdown {
-            font-weight: bold;
-        }
-
-        .is-countdown {
-          border: none;
-          background: none;
-          color: red;
-        }
-    </style>
-
-
+		<link rel="stylesheet" href="css/style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js'></script>
+
     <!-- Countdown.js see: http://keith-wood.name/countdown.html-->
-    <script src="js/jquery.plugin.min.js"></script>
-    <script src="js/jquery.countdown.js"></script>
+    	<script src="js/jquery.plugin.min.js"></script>
+    	<script src="js/jquery.countdown.js"></script>
     <!--Luxon.js see: https://moment.github.io/luxon/index.html -->
-    <script src="js/luxon.js"></script>
-
+    	<script src="js/luxon.js"></script>
     <!-- For IE11 support -->
-    <script src="https://cdn.polyfill.io/v3/polyfill.js?features=default,String.prototype.repeat,Array.prototype.find,Array.prototype.findIndex,Math.trunc,Math.sign,Object.is"></script>
-    <script src="https://unpkg.com/date-time-format-timezone@latest/build/browserified/date-time-format-timezone-complete-min.js"></script>
+    	<script src="js/LuxonIEpolyfill.js"></script>
+    	<script src="js/date-time-format-timezone-complete-min.js"></script>
 
-    <script>
-        $(function () {
-            var DateTime = luxon.DateTime;
-            var morningTarget = 10;
-            var afternoonTarget = 16;
-            var cutoffTime;
-            var deliveryText;
-
-            var getTime = function () {
-                var now = DateTime.local().setZone('America/Los_Angeles');
-                var weekday = now.weekday;
-                var year = now.year;
-                var month = now.month;
-                var day = now.day;
-                var hour = now.hour;
-
-                console.log(now);
-
-                //Monday-Thursday
-                if (weekday >= 1 && weekday <= 4) {
-                    //$('#defaultCountdown').addClass('show');
-
-                    //Between morningTarget & afternoonTarget, countdown to afternoon
-                    if (hour >= morningTarget && hour < afternoonTarget) {
-                        console.log(morningTarget + 'am to ' + afternoonTarget + 'pm');
-                        var setCutoff = DateTime.fromObject({ hour: afternoonTarget, zone: 'America/Los_Angeles' });
-                        cutoffTime = setCutoff.toJSDate();
-                        deliveryText = 'by 10am the next business day';
-                    }
-
-                    //AfternoonTarget - 11:59pm, countdown until morning next day
-                    else if (hour >= afternoonTarget && hour < 24) {
-                        //missed deadline today, add one day
-                        console.log(afternoonTarget + 'pm - ' + 'Midnight '+ '-Missed deadline today');
-                        var setCutoff = DateTime.fromObject({ day: day +1, hour: morningTarget, zone: 'America/Los_Angeles' });
-                        cutoffTime = setCutoff.toJSDate();
-                        deliveryText = 'by 10am the next business day';
-                    }
-
-                    //Midnight - morningTarget, coundown to morning today
-                    else {
-                        console.log('Midnight to ' + morningTarget + 'am');
-                        var setCutoff = DateTime.fromObject({ hour: morningTarget, zone: 'America/Los_Angeles' });
-                        cutoffTime = setCutoff.toJSDate();
-                        deliveryText = 'today';
-                    }
-                }
-
-                //Friday
-                else if (weekday === 5) {
-                  console.log('Today is Friday');
-                }
-
-                //Saturday
-                else if (weekday === 6) {
-                  console.log('Today is Saturday');
-                }
-
-                //Sunday
-                else if (weekday === 0) {
-                  console.log('Today is Sunday');
-                }
-
-                $('#when').text(cutoffTime);
-                $('#delivery').text(deliveryText);
-            }
-
-            var startTimer = function () {
-                getTime();
-                $('#defaultCountdown').countdown({
-                    until: cutoffTime,
-                    format: 'HMS',
-                    layout: '{hnn}{sep}{mnn}{sep}{snn}',
-                    onExpiry: restartTimer
-                });
-            };
-
-            var restartTimer = function () {
-                console.log("restart ran")
-                getTime();
-                $('#defaultCountdown').countdown('option', { until: cutoffTime });
-            }
-
-            startTimer();
-
-        });
-    </script>
+		<script src="js/timer.js"></script>
 </head>
+
 <body>
-    <h1>jQuery Countdown Basics</h1>
-    <p>
-        This page demonstrates the very basics of the
-        <a href="http://keith-wood.name/countdown.html">jQuery Countdown plugin</a>.
-        It contains the minimum requirements for using the plugin and
-        can be used as the basis for your own experimentation.
-    </p>
-    <p>For more detail see the <a href="http://keith-wood.name/countdownRef.html">documentation reference</a> page.</p>
 
     <div>Counting down to: <span id="when"></span></div>
 
@@ -142,11 +30,5 @@
       </p>
     </div>
 
-    <dl>
-        <dt>Github</dt>
-        <dd><a href="https://github.com/kbwood/countdown">https://github.com/kbwood/countdown</a></dd>
-        <dt>Bower</dt>
-        <dd>kbw-countdown</dd>
-    </dl>
 </body>
 </html>

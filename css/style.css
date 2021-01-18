@@ -1,0 +1,15 @@
+#myCountdown {
+  margin: 2em 0;
+  font-size: 1.35em;
+  font-family: sans-serif;
+}
+
+#defaultCountdown {
+    font-weight: bold;
+}
+
+.is-countdown {
+  border: none;
+  background: none;
+  color: red;
+}
