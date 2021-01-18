@@ -1,74 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title>jQuery Countdown</title>
-<link rel="stylesheet" href="css/jquery.countdown.css">
-<style type="text/css">
-#defaultCountdown { width: 240px; height: 45px; font-weight: bold; }
-</style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="js/jquery.plugin.min.js"></script>
-<script src="js/jquery.countdown.js"></script>
-<script>
-$(function () {
-    var targetHour = 10;
-    var targetMin = 0;
-    var targetTime;
-    var deliveryDay;
-
-    var getTime = function () {
-        var now = new Date();
-        if ((now.getHours() < targetHour) || ((now.getHours() <= targetHour) && (now.getMinutes() < targetMin))) {
-            targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMin);
-            deliveryDay = 'today';
-
-            $('#year').text(targetTime);
-            $('#delivery').text(deliveryDay);
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>jQuery Countdown</title>
+    <link rel="stylesheet" href="css/jquery.countdown.css">
+    <style type="text/css">
+        #defaultCountdown {
+            width: 240px;
+            height: 45px;
+            font-weight: bold;
         }
-        else {
-            targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, targetHour, targetMin);
-            deliveryDay = 'tomorrow';
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="js/jquery.plugin.min.js"></script>
+    <script src="js/jquery.countdown.js"></script>
+    <script>
+        $(function () {
+            var morningTarget = 10;
+            var afternoonTarget = 16;
+            var cutoffTime;
+            var deliveryText;
 
-            $('#year').text(targetTime);
-            $('#delivery').text(deliveryDay);
-        }
-    }
+            var getTime = function () {
+                var now = new Date();
 
-    var startTimer = function () {
-        getTime();
-        $('#defaultCountdown').countdown({
-            until: targetTime,
-            format: 'HMS',
-            layout: '{hnn}{sep}{mnn}{sep}{snn}',
-            onExpiry: restartTimer
+                //between 10am-3:59pm, countdown to 4pm
+                if (now.getHours() >= morningTarget && now.getHours() < afternoonTarget) {
+                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), afternoonTarget);
+                    deliveryText = 'by 10am the next business day';
+                }
+
+                //4pm - 11:59pm, countdown until 10am next day
+                else if (now.getHours() >= afternoonTarget && now.getHours() < 24) {
+                    //missed deadline today, add one day
+                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, morningTarget);
+                    deliveryText = 'by 10am the next business day';
+                    console.log('missed deadline today');
+                }
+
+                //12am - 9:59am, coundown to 10am today
+                else {
+                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), morningTarget);
+                    deliveryText = 'today';
+                }
+
+                $('#year').text(cutoffTime);
+                $('#delivery').text(deliveryText);
+                console.log(cutoffTime)
+            }
+
+            var startTimer = function () {
+                getTime();
+                $('#defaultCountdown').countdown({
+                    until: cutoffTime,
+                    format: 'HMS',
+                    layout: '{hnn}{sep}{mnn}{sep}{snn}',
+                    onExpiry: restartTimer
+                });
+            };
+
+            var restartTimer = function () {
+                console.log("restart ran")
+                getTime();
+                $('#defaultCountdown').countdown('option', { until: cutoffTime });
+            }
+
+            startTimer();
+
         });
-    };
-
-    var restartTimer = function () {
-        console.log("restart ran")
-        getTime();
-        $('#defaultCountdown').countdown('option', { until: targetTime });
-    }
-
-    startTimer();
-
-});
-</script>
+    </script>
 </head>
 <body>
-<h1>jQuery Countdown Basics</h1>
-<p>This page demonstrates the very basics of the
-	<a href="http://keith-wood.name/countdown.html">jQuery Countdown plugin</a>.
-	It contains the minimum requirements for using the plugin and
-	can be used as the basis for your own experimentation.</p>
-<p>For more detail see the <a href="http://keith-wood.name/countdownRef.html">documentation reference</a> page.</p>
-<p>Counting down to <span id="year">2014</span>.</p>
-<div id="defaultCountdown"></div>
-<div style="font-weight: bold; font-size: 1.15em;">For delivery <span id="delivery"></span></div>
-<dl>
-	<dt>Github</dt><dd><a href="https://github.com/kbwood/countdown">https://github.com/kbwood/countdown</a></dd>
-	<dt>Bower</dt><dd>kbw-countdown</dd>
-</dl>
+    <h1>jQuery Countdown Basics</h1>
+    <p>
+        This page demonstrates the very basics of the
+        <a href="http://keith-wood.name/countdown.html">jQuery Countdown plugin</a>.
+        It contains the minimum requirements for using the plugin and
+        can be used as the basis for your own experimentation.
+    </p>
+    <p>For more detail see the <a href="http://keith-wood.name/countdownRef.html">documentation reference</a> page.</p>
+
+
+    <div id="defaultCountdown"></div>
+    <div style="font-size: 1.15em; margin-bottom: 2em;">To receive product <span id="delivery" style="font-weight: bold;"></span></div>
+
+    <dl>
+        <dt>Github</dt>
+        <dd><a href="https://github.com/kbwood/countdown">https://github.com/kbwood/countdown</a></dd>
+        <dt>Bower</dt>
+        <dd>kbw-countdown</dd>
+    </dl>
 </body>
 </html>
