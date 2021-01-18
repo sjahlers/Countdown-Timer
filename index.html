@@ -5,15 +5,27 @@
     <title>jQuery Countdown</title>
     <link rel="stylesheet" href="css/jquery.countdown.css">
     <style type="text/css">
+        #myCountdown {
+          margin: 2em 0;
+          font-size: 1.5em;
+          font-family: sans-serif;
+        }
+
         #defaultCountdown {
-            width: 240px;
-            height: 45px;
             font-weight: bold;
         }
+
+        .is-countdown {
+          border: none;
+          background: none;
+          color: red;
+        }
     </style>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="js/jquery.plugin.min.js"></script>
     <script src="js/jquery.countdown.js"></script>
+
     <script>
         $(function () {
             var morningTarget = 10;
@@ -23,25 +35,55 @@
 
             var getTime = function () {
                 var now = new Date();
+                var today = now.getDay();
 
-                //between 10am-3:59pm, countdown to 4pm
-                if (now.getHours() >= morningTarget && now.getHours() < afternoonTarget) {
-                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), afternoonTarget);
-                    deliveryText = 'by 10am the next business day';
+                console.log(today);
+
+                //Monday-Thursday
+                if (today >= 1 && today <= 4) {
+
+                    //between 10am-3:59pm, countdown to 4pm
+                    if (now.getHours() >= morningTarget && now.getHours() < afternoonTarget) {
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), afternoonTarget);
+                        deliveryText = 'by 10am the next business day';
+                    }
+
+                    //4pm - 11:59pm, countdown until 10am next day
+                    else if (now.getHours() >= afternoonTarget && now.getHours() < 24) {
+                        //missed deadline today, add one day
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, morningTarget);
+                        deliveryText = 'by 10am the next business day';
+                        console.log('missed deadline today');
+                    }
+
+                    //12am - 9:59am, coundown to 10am today
+                    else {
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), morningTarget);
+                        deliveryText = 'today';
+                    }
                 }
 
-                //4pm - 11:59pm, countdown until 10am next day
-                else if (now.getHours() >= afternoonTarget && now.getHours() < 24) {
-                    //missed deadline today, add one day
-                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, morningTarget);
-                    deliveryText = 'by 10am the next business day';
-                    console.log('missed deadline today');
-                }
+                //Friday
+                else if (today === 5) {
+                    //between 10am-3:59pm, countdown to 4pm
+                    if (now.getHours() >= morningTarget && now.getHours() < afternoonTarget) {
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), afternoonTarget);
+                        deliveryText = 'by 10am the next business day';
+                    }
 
-                //12am - 9:59am, coundown to 10am today
-                else {
-                    cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), morningTarget);
-                    deliveryText = 'today';
+                    //4pm - 11:59pm, countdown until 10am Monday
+                    else if (now.getHours() >= afternoonTarget && now.getHours() < 24) {
+                        //missed deadline today, add 3 days for Monday
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3, morningTarget);
+                        deliveryText = 'by 10am the next business day';
+                        console.log('missed deadline today');
+                    }
+
+                    //12am - 9:59am, coundown to 10am today
+                    else {
+                        cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), morningTarget);
+                        deliveryText = 'today';
+                    }
                 }
 
                 $('#year').text(cutoffTime);
@@ -81,8 +123,11 @@
     <p>For more detail see the <a href="http://keith-wood.name/countdownRef.html">documentation reference</a> page.</p>
 
 
-    <div id="defaultCountdown"></div>
-    <div style="font-size: 1.15em; margin-bottom: 2em;">To receive product <span id="delivery" style="font-weight: bold;"></span></div>
+    <div id="myCountdown">
+      <p>
+        Order within the next <span id="defaultCountdown"></span> to receive product <span id="delivery"></span>
+      </p>
+    </div>
 
     <dl>
         <dt>Github</dt>
