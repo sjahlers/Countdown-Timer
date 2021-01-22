@@ -14,6 +14,8 @@ $(function () {
         //get current time in chosen timezone using Luxon; get day of the week and the hour.
         var now = DateTime.local().setZone('America/Los_Angeles');
         var weekday = now.weekday;
+        var weekdayName = now.weekdayLong;
+        var day = now.day;
         var hour = now.hour;
 
         console.log('Time now: ', now);
@@ -23,7 +25,7 @@ $(function () {
 
             //Between morningTarget & afternoonTarget, countdown to afternoon
             if (hour >= morningTarget && hour < afternoonTarget) {
-                console.log(weekday + ' ' + morningTarget + ':00 to ' + afternoonTarget + ':00');
+                console.log(weekdayName + ' ' + morningTarget + ':00 to ' + afternoonTarget + ':00');
                 //Set the shipping cutoff time using Luxon:
                 var setCutoff = DateTime.fromObject({ hour: afternoonTarget, zone: 'America/Los_Angeles' });
                 //Convert the shipping cutoff time to a JS date object that is used by the countdown timer plugin:
@@ -35,7 +37,7 @@ $(function () {
             //AfternoonTarget - 11:59pm, countdown until morning next day
             else if (hour >= afternoonTarget && hour < 24) {
                 //missed deadline today, add one day
-                console.log(weekday + ' ' + afternoonTarget + ':00 - ' + '23:59 '+ 'Missed deadline today');
+                console.log(weekdayName + ' ' + afternoonTarget + ':00 - ' + '23:59 '+ 'Missed deadline today');
                 var setCutoff = DateTime.fromObject({ day: day +1, hour: morningTarget, zone: 'America/Los_Angeles' });
                 cutoffTime = setCutoff.toJSDate();
                 deliveryText = 'by 10am the next business day';
@@ -43,7 +45,7 @@ $(function () {
 
             //Midnight - morningTarget, countdown to morning today
             else {
-                console.log(weekday + ' 00:00 to ' + morningTarget + ':00');
+                console.log(weekdayName + ' 00:00 to ' + morningTarget + ':00');
                 var setCutoff = DateTime.fromObject({ hour: morningTarget, zone: 'America/Los_Angeles' });
                 cutoffTime = setCutoff.toJSDate();
                 deliveryText = 'today';
@@ -93,7 +95,7 @@ $(function () {
               console.log('Sunday - Countdown to Monday ' + morningTarget + ':00');
               var setCutoff = DateTime.fromObject({ day: day +1, hour: morningTarget, zone: 'America/Los_Angeles' });
               cutoffTime = setCutoff.toJSDate();
-              deliveryText = 'by 10am the next business day';
+              deliveryText = 'the next business day';
         }
 
         //Display the shipping cutoff time (in local timezone) and shipping message to user:
