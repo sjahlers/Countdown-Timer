@@ -6,6 +6,7 @@ $(function () {
     var morningTarget = 10;
     var afternoonTarget = 16;
 
+    var todayDate;
     var cutoffTime;
     var deliveryText;
 
@@ -17,6 +18,8 @@ $(function () {
         var weekdayName = now.weekdayLong;
         var day = now.day;
         var hour = now.hour;
+        //get today's date
+        todayDate = now.day;
 
         console.log('Time now: ', now);
 
@@ -110,14 +113,25 @@ $(function () {
             until: cutoffTime,
             format: 'HMS',
             layout: '{hnn}{sep}{mnn}{sep}{snn}',
-            onExpiry: restartTimer
+            onExpiry: restartTimer,
+            onTick: isNewDay,
+            tickInterval: 3600 //in seconds
         });
     };
 
     var restartTimer = function () {
+        console.log('restartTimer ran');
         //When timer has ended, get the new current time and shipping cutoff time, and reintiialize:
         getTime();
         $('#defaultCountdown').countdown('option', { until: cutoffTime });
+    }
+
+    var isNewDay = function() {
+      //Check if the date has changed. If so, update shipping cutoff time & message
+      if (todayDate !== DateTime.local().setZone('America/Los_Angeles').day ) {
+        console.log('isNewDay ran');
+        getTime();
+      }
     }
 
     startTimer();
